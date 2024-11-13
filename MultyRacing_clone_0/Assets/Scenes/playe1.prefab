@@ -81,7 +81,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3311311803080157842, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
       propertyPath: m_Name
-      value: Free Racing Car Variant 1
+      value: playe1
       objectReference: {fileID: 0}
     - target: {fileID: 3311311803080157842, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
       propertyPath: m_TagString
@@ -97,6 +97,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3311311803080157842, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5955176663284153986}
+    - targetCorrespondingSourceObject: {fileID: 3311311803080157842, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
 --- !u!4 &37286935120453509 stripped
 Transform:
@@ -130,6 +133,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 879bf68af0a673f4d998661bf658034f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 0}
+  _networkObjectCache: {fileID: 0}
   motorForce: 1100
   steeringAngle: 20
   brakeForce: 1500
@@ -141,6 +147,7 @@ MonoBehaviour:
   frontRightTransform: {fileID: 37286935120453509}
   rearLeftTransform: {fileID: 8226262139089131161}
   rearRightTransform: {fileID: 993233865852942778}
+  correctionDelay: 2
 --- !u!146 &2741327088950073059 stripped
 WheelCollider:
   m_CorrespondingSourceObject: {fileID: 3145262460232535540, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}

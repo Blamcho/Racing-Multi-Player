@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FishNet.Object;
 
-public class CarControllers : MonoBehaviour
+public class CarControllers : NetworkBehaviour
 {
     public float motorForce = 1500f;
     public float steeringAngle = 30f;
     public float brakeForce = 3000f;
     public WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
     public Transform frontLeftTransform, frontRightTransform, rearLeftTransform, rearRightTransform;
-    public float rolloverThreshold = 0.5f; // Umbral de vuelco en el eje Y
-    public float correctionDelay = 2f;     // Tiempo en segundos antes de corregir la posición
+    public float correctionDelay = 3f;     // Tiempo en segundos antes de corregir la posición
 
     private float horizontalInput;
     private float verticalInput;
@@ -21,6 +21,9 @@ public class CarControllers : MonoBehaviour
 
     private void Update()
     {
+       
+        if (!IsOwner) return;
+
         GetInput();
         HandleMotor();
         HandleSteering();
@@ -80,12 +83,10 @@ public class CarControllers : MonoBehaviour
 
     private void CheckRollover()
     {
-        // Verifica si el coche está inclinado más allá del umbral
-        if (Mathf.Abs(transform.up.y) < rolloverThreshold)
+        if (transform.up.y < 0)
         {
             rolloverTimer += Time.deltaTime;
 
-            // Corrige la posición si el tiempo de vuelco es mayor al tiempo de corrección
             if (rolloverTimer >= correctionDelay)
             {
                 CorrectCarPosition();
@@ -93,16 +94,14 @@ public class CarControllers : MonoBehaviour
         }
         else
         {
-            // Reinicia el temporizador si el coche no está volcado
             rolloverTimer = 0f;
         }
     }
 
     private void CorrectCarPosition()
     {
-        // Restaura el coche a su posición correcta
-        transform.position += Vector3.up; // Eleva el coche un poco para evitar que se atasque en el suelo
+        transform.position += Vector3.up;
         transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
-        rolloverTimer = 0f; // Reinicia el temporizador después de corregir
+        rolloverTimer = 0f;
     }
 }
