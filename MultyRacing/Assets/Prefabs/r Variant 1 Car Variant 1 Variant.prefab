@@ -95,7 +95,7 @@ PrefabInstance:
       addedObject: {fileID: -7769263478118943944}
     - targetCorrespondingSourceObject: {fileID: 2330953071496589701, guid: c48a8414088cbfa4c89c8e87832e4e39, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1218191541855927839}
+      addedObject: {fileID: -750417901830946865}
   m_SourcePrefab: {fileID: 100100000, guid: c48a8414088cbfa4c89c8e87832e4e39, type: 3}
 --- !u!1 &2990552918003077881 stripped
 GameObject:
@@ -219,7 +219,7 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &1218191541855927839
+--- !u!114 &-750417901830946865
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -228,9 +228,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2990552918003077881}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 059ac47bbf1623147a1e5c33c59495a0, type: 3}
+  m_Script: {fileID: 11500000, guid: acd6b89294bc3e745bbdad8e8e91aed4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2216566394905277717}
+  _networkObjectCache: {fileID: 0}
 --- !u!114 &6592329637349776894 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5955176663284153986, guid: c48a8414088cbfa4c89c8e87832e4e39, type: 3}
