@@ -9,7 +9,7 @@ public class SpawnManager : NetworkBehaviour
 
     private void Awake()
     {
-        // Inicializamos los puntos de spawn como no usados
+        
         usedSpawnPoints = new List<bool>(new bool[spawnPoints.Count]);
     }
 
@@ -33,14 +33,14 @@ public class SpawnManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// Libera un punto de spawn para que pueda ser usado nuevamente.
+  
     /// </summary>
     public void FreeSpawnPoint(Transform spawnPoint)
     {
         int index = spawnPoints.IndexOf(spawnPoint);
         if (index != -1)
         {
-            usedSpawnPoints[index] = false; // Marcar como no usado
+            usedSpawnPoints[index] = false;
         }
     }
 }

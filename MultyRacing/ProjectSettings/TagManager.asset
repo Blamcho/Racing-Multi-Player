@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Meta
   - SpawnPoint
+  - FinishLine
   layers:
   - Default
   - TransparentFX

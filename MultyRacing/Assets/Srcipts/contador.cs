@@ -3,27 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object;
 using TMPro;
-using   FishNet.Object.Synchronizing;
-using UnityEditor;
+using FishNet.Object.Synchronizing;
 
-
-public class contador : NetworkBehaviour
+public class Contador : NetworkBehaviour
 {
-    public TextMeshProUGUI tiempoText;
-   // readonly SyncTimer tiempoRestante = new SyncTimer();
+    public TextMeshProUGUI tiempoText; 
     readonly SyncStopwatch tiempoTranscurrido = new SyncStopwatch();
     public TextMeshProUGUI tiempoTranscurridoText; 
-    
+    public TextMeshProUGUI resultadoText; 
+
+    private bool hasCrossedFinishLine = false;
+    private bool isTimerRunning = true; 
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        StartCounter();
+    }
 
     void Awake()
     {
-      //  tiempoRestante.OnChange += OnTiempoRestanteChange;
-        tiempoTranscurrido.OnChange += OnTiempoTrancurridoChange;
+        tiempoTranscurrido.OnChange += OnTiempoTranscurridoChange;
     }
 
-    void OnTiempoTrancurridoChange(SyncStopwatchOperation op, float prev, bool asServe)
+    [Server]
+    private void StartCounter()
     {
-        print($"tiempo trancurrio: {op} - {prev}");
+        tiempoTranscurrido.StartStopwatch();
+        isTimerRunning = true; 
+    }
+
+    void OnTiempoTranscurridoChange(SyncStopwatchOperation op, float prev, bool asServer)
+    {
         switch (op)
         {
             case SyncStopwatchOperation.Start:
@@ -32,43 +43,56 @@ public class contador : NetworkBehaviour
             case SyncStopwatchOperation.Pause:
                 tiempoText.color = Color.yellow;
                 break;
-            case SyncStopwatchOperation.Unpause:
-                break;
-            case SyncStopwatchOperation.PauseUpdated:
-                break;
-            case SyncStopwatchOperation.Stop:
-                tiempoText.color = Color.red;
-                break;
-            case SyncStopwatchOperation.StopUpdated:
-                break;
         }
     }
-
-   
 
     void Update()
     {
-        tiempoTranscurrido.Update(Time.deltaTime);
-        tiempoTranscurridoText.text = $"{tiempoTranscurrido.Elapsed:0:00}";
+        if (!isTimerRunning) return;
 
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-           tiempoTranscurrido.StartStopwatch();
-        }
         
+        tiempoTranscurrido.Update(Time.deltaTime);
+        tiempoTranscurridoText.text = $"{tiempoTranscurrido.Elapsed:0.00}";
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!IsOwner || hasCrossedFinishLine) return; 
+
+        if (other.CompareTag("FinishLine")) 
+        {
+            hasCrossedFinishLine = true;
+            
+            if (tiempoTranscurrido.Elapsed <= 100f)
+            {
+                ShowResult("¡Ganaste!");
+            }
+            else
+            {
+                ShowResult("Perdiste.");
+            }
+
+            // Detiene el cronómetro para este jugador
+            StopCounter();
+        }
+    }
+
+    [Client]
+    private void ShowResult(string message)
+    {
+        resultadoText.text = message; 
+        resultadoText.gameObject.SetActive(true);
+        
+        Invoke(nameof(HideResult), 5f);
+    }
+
+    private void HideResult()
+    {
+        resultadoText.gameObject.SetActive(false);
+    }
+
+    private void StopCounter()
+    {
+        isTimerRunning = false;
+    }
 }
-
-
-
-
-
-
-
-   
-
-
-   
-    
-

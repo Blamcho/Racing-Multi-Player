@@ -10,7 +10,7 @@ public class CarControllers : NetworkBehaviour
     public float brakeForce = 3000f;
     public WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
     public Transform frontLeftTransform, frontRightTransform, rearLeftTransform, rearRightTransform;
-    public float correctionDelay = 3f; // Tiempo en segundos antes de corregir la posición
+    public float correctionDelay = 3f;
 
     private float horizontalInput;
     private float verticalInput;
@@ -20,16 +20,31 @@ public class CarControllers : NetworkBehaviour
     private float rolloverTimer;
     private float upsideDownTimer;
 
+  
+    private Vector3 syncedPosition;
+    private Quaternion syncedRotation;
+
     private void Update()
     {
-        if (!IsOwner) return;
+       
+        if (IsOwner)
+        {
+            GetInput();
+            HandleMotor();
+            HandleSteering();
+            UpdateWheels();
+            CheckRollover();
+            CheckUpsideDown();
 
-        GetInput();
-        HandleMotor();
-        HandleSteering();
-        UpdateWheels();
-        CheckRollover();
-        CheckUpsideDown();
+            
+            SendMovementToServer(transform.position, transform.rotation);
+        }
+        else
+        {
+          
+            transform.position = Vector3.Lerp(transform.position, syncedPosition, Time.deltaTime * 10f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, syncedRotation, Time.deltaTime * 10f);
+        }
     }
 
     private void GetInput()
@@ -84,7 +99,6 @@ public class CarControllers : NetworkBehaviour
 
     private void CheckRollover()
     {
-        // Si el coche está inclinado en el eje vertical (izquierda o derecha)
         if (Mathf.Abs(transform.up.y) < 0.5f && Mathf.Abs(transform.up.z) > 0.5f)
         {
             rolloverTimer += Time.deltaTime;
@@ -102,7 +116,6 @@ public class CarControllers : NetworkBehaviour
 
     private void CheckUpsideDown()
     {
-        // Si el coche está completamente de cabeza (up.y es negativo)
         if (transform.up.y < -0.5f)
         {
             upsideDownTimer += Time.deltaTime;
@@ -120,16 +133,39 @@ public class CarControllers : NetworkBehaviour
 
     private void CorrectCarPosition()
     {
-        // Corrige la posición y orientación del coche
-        transform.position += Vector3.up; // Eleva ligeramente el coche para evitar colisiones
-        transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f); // Restablece la rotación
+        transform.position += Vector3.up; 
+        transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f); 
         rolloverTimer = 0f;
         upsideDownTimer = 0f;
     }
 
+    
+
+    [ServerRpc]
+    private void SendMovementToServer(Vector3 position, Quaternion rotation)
+    {
+       
+        UpdateMovementOnClients(position, rotation);
+    }
+
+    [ObserversRpc]
+    private void UpdateMovementOnClients(Vector3 position, Quaternion rotation)
+    {
+       
+        syncedPosition = position;
+        syncedRotation = rotation;
+    }
+
+  
+
     [ObserversRpc]
     public void CambiarColor(Color color)
     {
-        GetComponent<MeshRenderer>().material.color = color;
+      
+        Renderer carRenderer = GetComponent<Renderer>();
+        if (carRenderer != null)
+        {
+            carRenderer.material.color = color;
+        }
     }
 }
