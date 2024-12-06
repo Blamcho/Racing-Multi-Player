@@ -29,7 +29,7 @@ public class PlayerSpawner : NetworkBehaviour
 
                 if (spawnPoint != null)
                 {
-
+                    Debug.Log(spawnPoint.position);
                     transform.position = spawnPoint.position;
                     transform.rotation = spawnPoint.rotation;
                 }

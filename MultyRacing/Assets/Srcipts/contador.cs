@@ -49,7 +49,7 @@ public class contador : NetworkBehaviour
     void Update()
     {
         tiempoTranscurrido.Update(Time.deltaTime);
-        tiempoTranscurridoText.text = $"{tiempoTranscurrido.Elapsed:20:00}";
+        tiempoTranscurridoText.text = $"{tiempoTranscurrido.Elapsed:0:00}";
 
         if (Input.GetKeyDown(KeyCode.Y))
         {

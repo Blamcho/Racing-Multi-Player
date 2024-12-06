@@ -126,4 +126,10 @@ public class CarControllers : NetworkBehaviour
         rolloverTimer = 0f;
         upsideDownTimer = 0f;
     }
+
+    [ObserversRpc]
+    public void CambiarColor(Color color)
+    {
+        GetComponent<MeshRenderer>().material.color = color;
+    }
 }
