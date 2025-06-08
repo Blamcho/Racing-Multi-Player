@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2330953071496589701, guid: c48a8414088cbfa4c89c8e87832e4e39, type: 3}
       propertyPath: m_Name
-      value: r Variant 1 Car Variant 1 Variant
+      value: Car_Player_Bundle
       objectReference: {fileID: 0}
     - target: {fileID: 3103795823785847615, guid: c48a8414088cbfa4c89c8e87832e4e39, type: 3}
       propertyPath: m_LocalScale.x
@@ -150,7 +150,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 4
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 14041038666476723275
+  <AssetPathHash>k__BackingField: 12267712565521846939
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 34.791, y: 0.29, z: -127.71}
