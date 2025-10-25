@@ -1,15 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using FishNet.Object;
-
-[System.Serializable]
-public class CarConfig
-{
-    public float motorForce;
-    public float steeringAngle;
-    public float brakeForce;
-}
 
 public class CarControllers : NetworkBehaviour
 {
@@ -28,20 +20,13 @@ public class CarControllers : NetworkBehaviour
     private float rolloverTimer;
     private float upsideDownTimer;
 
+  
     private Vector3 syncedPosition;
     private Quaternion syncedRotation;
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        if (IsOwner)
-        {
-            StartCoroutine(FetchCarConfigFromAPI());
-        }
-    }
-
     private void Update()
     {
+       
         if (IsOwner)
         {
             GetInput();
@@ -50,10 +35,13 @@ public class CarControllers : NetworkBehaviour
             UpdateWheels();
             CheckRollover();
             CheckUpsideDown();
+
+            
             SendMovementToServer(transform.position, transform.rotation);
         }
         else
         {
+          
             transform.position = Vector3.Lerp(transform.position, syncedPosition, Time.deltaTime * 10f);
             transform.rotation = Quaternion.Lerp(transform.rotation, syncedRotation, Time.deltaTime * 10f);
         }
@@ -61,9 +49,9 @@ public class CarControllers : NetworkBehaviour
 
     private void GetInput()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        isBraking = Input.GetKey(KeyCode.Space);
+        horizontalInput = Input.GetAxis("Horizontal"); // A/D keys for steering
+        verticalInput = Input.GetAxis("Vertical");     // W/S keys for forward/reverse
+        isBraking = Input.GetKey(KeyCode.Space);       // Space for braking
     }
 
     private void HandleMotor()
@@ -114,6 +102,7 @@ public class CarControllers : NetworkBehaviour
         if (Mathf.Abs(transform.up.y) < 0.5f && Mathf.Abs(transform.up.z) > 0.5f)
         {
             rolloverTimer += Time.deltaTime;
+
             if (rolloverTimer >= correctionDelay)
             {
                 CorrectCarPosition();
@@ -130,6 +119,7 @@ public class CarControllers : NetworkBehaviour
         if (transform.up.y < -0.5f)
         {
             upsideDownTimer += Time.deltaTime;
+
             if (upsideDownTimer >= correctionDelay)
             {
                 CorrectCarPosition();
@@ -143,61 +133,39 @@ public class CarControllers : NetworkBehaviour
 
     private void CorrectCarPosition()
     {
-        transform.position += Vector3.up;
-        transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
+        transform.position += Vector3.up; 
+        transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f); 
         rolloverTimer = 0f;
         upsideDownTimer = 0f;
     }
 
+    
+
     [ServerRpc]
     private void SendMovementToServer(Vector3 position, Quaternion rotation)
     {
+       
         UpdateMovementOnClients(position, rotation);
     }
 
     [ObserversRpc]
     private void UpdateMovementOnClients(Vector3 position, Quaternion rotation)
     {
+       
         syncedPosition = position;
         syncedRotation = rotation;
     }
 
+  
+
     [ObserversRpc]
     public void CambiarColor(Color color)
     {
+      
         Renderer carRenderer = GetComponent<Renderer>();
         if (carRenderer != null)
         {
             carRenderer.material.color = color;
-        }
-    }
-
-    
-    
-    private IEnumerator FetchCarConfigFromAPI()
-    {
-        string apiUrl = "http://127.0.0.1:3000/config";
-
-
-        using (UnityWebRequest request = UnityWebRequest.Get(apiUrl))
-        {
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError("Error al obtener configuración del coche: " + request.error);
-            }
-            else
-            {
-                string json = request.downloadHandler.text;
-                CarConfig config = JsonUtility.FromJson<CarConfig>(json);
-
-                motorForce = config.motorForce;
-                steeringAngle = config.steeringAngle;
-                brakeForce = config.brakeForce;
-
-                Debug.Log("✅ Configuración del coche cargada desde la API.");
-            }
         }
     }
 }
